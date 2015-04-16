@@ -9,50 +9,39 @@
 import UIKit
 
 class ViewController: UIViewController {
-    
     @IBOutlet weak var myLabel: UILabel!
-    
+    var isInLoad = false
     @IBAction func getGacha(sender: AnyObject) {
-        let results = [
-            "大吉",
-            "中吉",
-            "吉",
-            "凶",
-            "大凶"
-        ]
-        
-        let random = arc4random_uniform(UInt32(results.count))
-        
-        if random == 0 {
-            self.myLabel.textColor = UIColor.redColor()
-        } else {
-            self.myLabel.textColor = UIColor.blackColor()
-        }
-        
-        // create the url-request
-        //let urlString = "http://api.local/work/api/index.php"
-        let urlString = "http://httpbin.org/get"
-        var request = NSMutableURLRequest(URL: NSURL(string: urlString)!)
-        
-        // set the method(HTTP-GET)
-        request.HTTPMethod = "GET"
-        
-        // use NSURLSession
-        var task = NSURLSession.sharedSession().dataTaskWithRequest(request, completionHandler: { data, response, error in
-            if (error == nil) {
-                var result = NSString(data: data, encoding: NSUTF8StringEncoding)!
-                
-                var dict = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: nil) as NSDictionary
-                println(dict["url"] as NSString)
-                
-            } else {
-                println(error)
+        if (self.isInLoad == false){
+            self.isInLoad = true
+            self.myLabel.text = "????"
+
+            // create the url-request
+            let urlString = "http://httpbin.org/get"
+
+            var request = NSMutableURLRequest(URL: NSURL(string: urlString)!)
+            
+            // set the method(HTTP-GET)
+            request.HTTPMethod = "GET"
+            
+            // use NSURLSession
+            var session = NSURLSession.sharedSession()
+            var task = session.dataTaskWithRequest(request) {
+                (data, response, error) -> Void in
+                if (error == nil) {
+                    var dict = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: nil) as NSDictionary
+                    self.myLabel.text = dict["url"] as NSString
+                    self.isInLoad = false
+                    println(self.isInLoad)
+                    println(self.myLabel.text)
+                } else {
+                    self.myLabel.text = "error"
+                }
             }
-        })
-        task.resume()
-        
-        self.myLabel.text = results[Int(random)]
-        
+            task.resume()
+        } else {
+            self.myLabel.text = "wait!"
+        }
     }
     
     override func viewDidLoad() {
