@@ -30,7 +30,9 @@ class ViewController: UIViewController {
                 (data, response, error) -> Void in
                 if (error == nil) {
                     var dict = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: nil) as NSDictionary
-                    self.myLabel.text = dict["url"] as NSString
+                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                        self.myLabel.text = dict["url"] as NSString
+                    });
                     self.isInLoad = false
                     println(self.isInLoad)
                     println(self.myLabel.text)
