@@ -27,18 +27,18 @@ class ViewController: UIViewController {
         // use NSURLSession
         var session = NSURLSession.sharedSession()
         var task = session.dataTaskWithRequest(request) {
-            (data, response, error) -> Void in
+            [weak self] (data, response, error) -> Void in
             if (error == nil) {
                 var dict = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions.MutableContainers, error: nil) as NSDictionary
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                    self.myLabel.text = dict["url"] as NSString
-                    println(self.myLabel.text)
+                    self?.myLabel.text = dict["url"] as NSString
+                    println(self?.myLabel.text)
                 });
             } else {
-                self.myLabel.text = "error"
+                self?.myLabel.text = "error"
             }
             
-            self.myButton.userInteractionEnabled = true
+            self?.myButton.userInteractionEnabled = true
         }
         task.resume()
     }
